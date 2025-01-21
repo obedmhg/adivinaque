@@ -256,11 +256,32 @@
                         <div class="word-list">${incorrectWords.map(word => `<div>✗ ${word}</div>`).join('')}</div>
                     </div>
                 </div>
-                <button onclick="location.reload()">Play Again</button>
+                <button onclick="resetGame()">Play Again</button>
             `;
 
             document.getElementById('startScreen').innerHTML = resultsHTML;
             document.getElementById('startScreen').classList.remove('hidden');
+        }
+
+        function resetGame() {
+            // Reset game state
+            currentCategory = [];
+            currentWord = '';
+            score = 0;
+            timeLeft = 60;
+            correctWords = [];
+            incorrectWords = [];
+            
+            // Restore initial screen
+            document.getElementById('startScreen').innerHTML = `
+                <h1>Forehead Word Game</h1>
+                <div class="category-buttons" id="categories"></div>
+            `;
+            
+            // Reinitialize categories
+            initializeCategories();
+            updateScore();
+            updateTimerDisplay();
         }
 
         // Initialize game
