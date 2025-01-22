@@ -127,6 +127,8 @@
             display: none;
             padding: 20px;
             overflow-y: auto;
+            touch-action: pan-y;
+            z-index: 1001;
         }
 
         .management-content {
@@ -156,11 +158,13 @@
             font-size: 1em;
             border-radius: 5px;
             border: none;
+            min-height: 40px;
         }
 
         .small-button {
             padding: 8px 15px;
             font-size: 0.9em;
+            min-width: 80px;
         }
 
         .word-item {
@@ -180,6 +184,15 @@
             padding: 3px 8px;
             border-radius: 3px;
             margin-left: 5px;
+            min-width: 30px;
+        }
+
+        #manageCategories {
+            position: fixed;
+            bottom: 20px;
+            width: auto;
+            padding: 10px 20px;
+            z-index: 1000;
         }
 
         @media (min-width: 768px) {
@@ -202,7 +215,7 @@
         <div id="wordDisplay" class="hidden"></div>
         <div id="leftFeedback" class="feedback hidden"></div>
         <div id="rightFeedback" class="feedback hidden"></div>
-        <button id="manageCategories" onclick="showManagement()" style="position: absolute; bottom: 20px;">Manage Categories</button>
+        <button id="manageCategories">Manage Categories</button>
     </div>
 
     <div id="managementModal" class="management-modal">
@@ -210,11 +223,13 @@
             <h2>Manage Categories</h2>
             <div class="word-input-group">
                 <input id="newCategoryName" placeholder="New category name">
-                <button class="small-button" onclick="addNewCategory()">Add Category</button>
+                <button class="small-button" id="addCategoryBtn">Add Category</button>
             </div>
             <div id="categoryManagementList"></div>
-            <button class="small-button" onclick="hideManagement()">Close</button>
-            <button class="small-button" onclick="resetToDefault()" style="margin-left: 10px;">Reset to Default</button>
+            <div class="word-input-group" style="margin-top: 20px;">
+                <button class="small-button" id="closeManagementBtn">Close</button>
+                <button class="small-button" id="resetDefaultBtn">Reset to Default</button>
+            </div>
         </div>
     </div>
 
@@ -236,6 +251,13 @@
         let correctWords = [];
         let incorrectWords = [];
 
+        // Mobile-friendly event handling
+        function addMobileEvents(element, event, handler) {
+            element.addEventListener(event, handler);
+            element.addEventListener('touchstart', handler);
+        }
+
+        // Management functions
         function showManagement() {
             document.getElementById('managementModal').style.display = 'block';
             refreshCategoryManagement();
@@ -258,18 +280,43 @@
                     <h3>${category}</h3>
                     <div class="word-input-group">
                         <input id="wordInput-${category}" placeholder="Add new word">
-                        <button class="small-button" onclick="addWordToCategory('${category}')">Add Word</button>
+                        <button class="small-button add-word-btn" data-category="${category}">Add Word</button>
                     </div>
                     <div class="word-list">
                         ${categories[category].map(word => `
                             <div class="word-item">
                                 ${word}
-                                <button class="delete-word" onclick="deleteWord('${category}', '${word}')">×</button>
+                                <button class="delete-word" data-category="${category}" data-word="${word}">×</button>
                             </div>
                         `).join('')}
                     </div>
                 `;
                 container.appendChild(div);
+            });
+
+            // Add event listeners for dynamic elements
+            document.querySelectorAll('.add-word-btn').forEach(btn => {
+                addMobileEvents(btn, 'click', () => {
+                    const category = btn.dataset.category;
+                    const input = document.getElementById(`wordInput-${category}`);
+                    const word = input.value.trim();
+                    if (word) {
+                        categories[category].push(word);
+                        input.value = '';
+                        refreshCategoryManagement();
+                        saveCategories();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.delete-word').forEach(btn => {
+                addMobileEvents(btn, 'click', () => {
+                    const category = btn.dataset.category;
+                    const word = btn.dataset.word;
+                    categories[category] = categories[category].filter(w => w !== word);
+                    refreshCategoryManagement();
+                    saveCategories();
+                });
             });
         }
 
@@ -282,23 +329,6 @@
                 refreshCategoryManagement();
                 saveCategories();
             }
-        }
-
-        function addWordToCategory(category) {
-            const input = document.getElementById(`wordInput-${category}`);
-            const word = input.value.trim();
-            if (word) {
-                categories[category].push(word);
-                input.value = '';
-                refreshCategoryManagement();
-                saveCategories();
-            }
-        }
-
-        function deleteWord(category, word) {
-            categories[category] = categories[category].filter(w => w !== word);
-            refreshCategoryManagement();
-            saveCategories();
         }
 
         function resetToDefault() {
@@ -318,6 +348,7 @@
             localStorage.setItem('wordGameCategories', JSON.stringify(categories));
         }
 
+        // Game functions
         function initializeCategories() {
             const container = document.getElementById('categories');
             container.innerHTML = '';
@@ -325,11 +356,7 @@
             Object.keys(categories).forEach(category => {
                 const button = document.createElement('button');
                 button.textContent = category;
-                button.ontouchstart = (e) => {
-                    e.preventDefault();
-                    startGame(category);
-                };
-                button.onclick = () => startGame(category);
+                addMobileEvents(button, 'click', () => startGame(category));
                 container.appendChild(button);
             });
         }
@@ -444,10 +471,19 @@
 
         // Initialize game
         initializeCategories();
-        
-        // Touch event handling
-        document.addEventListener('touchstart', (e) => {
+
+        // Event listeners
+        addMobileEvents(document.getElementById('manageCategories'), 'click', (e) => {
             e.preventDefault();
+            showManagement();
+        });
+
+        addMobileEvents(document.getElementById('addCategoryBtn'), 'click', addNewCategory);
+        addMobileEvents(document.getElementById('closeManagementBtn'), 'click', hideManagement);
+        addMobileEvents(document.getElementById('resetDefaultBtn'), 'click', resetToDefault);
+
+        document.addEventListener('touchstart', (e) => {
+            if (e.target.tagName === 'BUTTON') e.preventDefault();
         }, { passive: false });
 
         document.addEventListener('touchend', (e) => {
@@ -456,7 +492,6 @@
             handleTap(touch.clientX);
         }, { passive: false });
 
-        // Desktop click support
         document.addEventListener('click', (e) => {
             if (!isGameActive) return;
             handleTap(e.clientX);
