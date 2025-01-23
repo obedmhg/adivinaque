@@ -206,6 +206,24 @@
             min-height: 50px;
         }
 
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .delete-category {
+            background: #ff4444;
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            min-width: 40px;
+            min-height: 40px;
+            margin-left: 10px;
+        }
+
         @media (min-width: 768px) {
             .results {
                 grid-template-columns: 1fr 1fr;
@@ -266,7 +284,6 @@
         let correctWords = [];
         let incorrectWords = [];
 
-        // Mobile-friendly event handling
         function addMobileEvents(element, event, handler) {
             element.addEventListener(event, handler);
             element.addEventListener('touchstart', function(e) {
@@ -277,7 +294,6 @@
             }, { passive: false });
         }
 
-        // Management functions
         function showManagement() {
             document.getElementById('managementModal').style.display = 'block';
             refreshCategoryManagement();
@@ -297,7 +313,10 @@
                 const div = document.createElement('div');
                 div.className = 'category-item';
                 div.innerHTML = `
-                    <h3>${category}</h3>
+                    <div class="category-header">
+                        <h3>${category}</h3>
+                        <button class="delete-category" data-category="${category}">Delete</button>
+                    </div>
                     <div class="word-input-group">
                         <input id="wordInput-${category}" placeholder="Add new word">
                         <button class="small-button add-word-btn" data-category="${category}">Add Word</button>
@@ -314,7 +333,6 @@
                 container.appendChild(div);
             });
 
-            // Add event listeners for dynamic elements
             document.querySelectorAll('.add-word-btn').forEach(btn => {
                 addMobileEvents(btn, 'click', () => {
                     const category = btn.dataset.category;
@@ -340,7 +358,13 @@
                 });
             });
 
-            // Add input focus handlers
+            document.querySelectorAll('.delete-category').forEach(btn => {
+                addMobileEvents(btn, 'click', () => {
+                    const category = btn.dataset.category;
+                    deleteCategory(category);
+                });
+            });
+
             document.querySelectorAll('input').forEach(input => {
                 input.addEventListener('touchstart', function(e) {
                     e.stopPropagation();
@@ -351,6 +375,15 @@
                     this.focus({ preventScroll: true });
                 });
             });
+        }
+
+        function deleteCategory(category) {
+            if (confirm(`Delete category "${category}" and all its words?`)) {
+                delete categories[category];
+                refreshCategoryManagement();
+                saveCategories();
+                initializeCategories();
+            }
         }
 
         function addNewCategory() {
@@ -382,7 +415,6 @@
             localStorage.setItem('wordGameCategories', JSON.stringify(categories));
         }
 
-        // Game functions
         function initializeCategories() {
             const container = document.getElementById('categories');
             container.innerHTML = '';
@@ -517,9 +549,7 @@
         addMobileEvents(document.getElementById('resetDefaultBtn'), 'click', resetToDefault);
 
         document.addEventListener('touchstart', (e) => {
-            if (e.target.tagName === 'BUTTON') {
-                e.preventDefault();
-            }
+            if (e.target.tagName === 'BUTTON') e.preventDefault();
         }, { passive: false });
 
         document.addEventListener('touchend', (e) => {
