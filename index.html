@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
-    <title>Forehead Word Game</title>
+    <title>Charades & Headbands</title>
     <style>
         html {
             height: -webkit-fill-available;
@@ -269,11 +269,11 @@
 <body>
     <div id="gameContainer">
         <div id="header">
-            <div>Time: <span id="timer">60</span></div>
-            <div>Score: <span id="score">0</span></div>
+            <div>Tiempo: <span id="timer">60</span></div>
+            <div>Puntuación: <span id="score">0</span></div>
         </div>
         <div id="startScreen">
-            <h1>Forehead Word Game</h1>
+            <h1>Charades & Headbands</h1>
             <div class="category-buttons" id="categories"></div>
         </div>
         <div id="wordDisplay" class="hidden"></div>
@@ -281,31 +281,64 @@
         <div id="rightIcon" class="feedback-icon hidden">✅</div>
         <div id="leftFeedback" class="feedback hidden"></div>
         <div id="rightFeedback" class="feedback hidden"></div>
-        <button id="manageCategories">Manage Categories</button>
+        <button id="manageCategories">Administrar Categorías</button>
     </div>
 
     <div id="managementModal" class="management-modal">
         <div class="management-content">
-            <h2>Manage Categories</h2>
+            <h2>Administrar Categorías</h2>
             <div class="word-input-group">
-                <input id="newCategoryName" placeholder="New category name">
-                <button class="small-button" id="addCategoryBtn">Add Category</button>
+                <input id="newCategoryName" placeholder="Nueva categoría">
+                <button class="small-button" id="addCategoryBtn">Añadir</button>
             </div>
             <div id="categoryManagementList"></div>
             <div class="word-input-group" style="margin-top: 20px;">
-                <button class="small-button" id="closeManagementBtn">Close</button>
-                <button class="small-button" id="resetDefaultBtn">Reset to Default</button>
+                <button class="small-button" id="closeManagementBtn">Cerrar</button>
+                <button class="small-button" id="resetDefaultBtn">Restablecer</button>
             </div>
         </div>
     </div>
 
     <script>
         let categories = JSON.parse(localStorage.getItem('wordGameCategories')) || {
-            'Food': ['Pizza', 'Sushi', 'Burrito', 'Paella', 'Cheesecake', 'Taco', 'Ramen', 'Croissant', 'Dim Sum', 'Falafel'],
-            'Animals': ['Elephant', 'Kangaroo', 'Platypus', 'Chameleon', 'Armadillo', 'Narwhal', 'Mongoose', 'Walrus', 'Lemur', 'Capybara'],
-            'Movies': ['Inception', 'Titanic', 'Jaws', 'Frozen', 'Gladiator', 'Chocolat', 'Saw', 'Twilight', 'Rocky', 'Shrek'],
-            'Countries': ['Canada', 'Brazil', 'Thailand', 'Morocco', 'Norway', 'Vietnam', 'Kenya', 'Argentina', 'Iceland', 'Malaysia'],
-            'Tech': ['Smartphone', 'Blockchain', 'Drone', 'Bitcoin', 'Robot', 'Nanotechnology', 'Metaverse', 'Cryptography', 'Tesla', 'WhatsApp']
+            "Comida": [
+                "Pizza", "Sushi", "Burrito", "Paella", "Cheesecake", "Taco", "Ramen", 
+                "Croissant", "Dim Sum", "Falafel", "Empanada", "Churro", "Enchilada", 
+                "Arepa", "Galleta", "Ceviche", "Tamales", "Pozole", "Tortilla", "Milanesa",
+                "Hamburguesa", "Hot Dog", "Pollo Frito", "Salchipapa", "Espagueti", 
+                "Lasagna", "Sopa", "Flan", "Panettone", "Gelatina", "Helado", "Pastel"
+            ],
+            "Animales": [
+                "Elefante", "Canguro", "Ornitorrinco", "Camaleón", "Armadillo", "Narval", 
+                "Mangosta", "Morsa", "Lémur", "Capibara", "Perezoso", "Tucán", "Delfín", 
+                "Ocelote", "Mono", "Jirafa", "Hipopótamo", "Pingüino", "Tiburón", "Zorro",
+                "León", "Tigre", "Cobra", "Búho", "Cisne", "Pantera", "Rinoceronte", 
+                "Caballo", "Murciélago", "Caracol", "Erizo", "Mapache", "Coyote"
+            ],
+            "Películas": [
+                "El Origen", "Titanic", "Tiburón", "Frozen", "Gladiador", "Chocolat", "Saw", 
+                "Crepúsculo", "Rocky", "Shrek", "Coco", "Avatar", "Toy Story", "Matrix", 
+                "Harry Potter", "Jurassic Park", "Los Increíbles", "Up", "Ratatouille", 
+                "Moana", "Star Wars", "El Rey León", "La Bella y la Bestia", "Aladdín", 
+                "Encanto", "Soul", "Cars", "Avengers", "Spider-Man", "Black Panther", 
+                "El Señor de los Anillos", "Hércules", "Blanca Nieves"
+            ],
+            "Países": [
+                "Canadá", "Brasil", "Tailandia", "Marruecos", "Noruega", "Vietnam", "Kenia", 
+                "Argentina", "Islandia", "Malasia", "España", "Japón", "México", "Perú", 
+                "Italia", "India", "Sudáfrica", "Francia", "Alemania", "Egipto", "Rusia", 
+                "China", "Corea del Sur", "Colombia", "Australia", "Grecia", "Chile", 
+                "Portugal", "Nueva Zelanda", "Indonesia", "Polonia", "Turquía", "Cuba"
+            ],
+            "Tecnología": [
+                "Smartphone", "Blockchain", "Dron", "Bitcoin", "Robot", "Nanotecnología", 
+                "Metaverso", "Criptografía", "Tesla", "WhatsApp", "Tablet", "Streaming", 
+                "Redes Sociales", "Programación", "Ciberseguridad", "Cámara", "Aplicación", 
+                "Inteligencia Artificial", "5G", "Domótica", "Wifi", "Código QR", 
+                "Realidad Virtual", "Smartwatch", "Energía Solar", "Impresión 3D", 
+                "Carga Inalámbrica", "Chatbot", "Machine Learning", "Supercomputadora", 
+                "Consola", "Teclado Mecánico"
+            ]
         };
 
         let currentCategory = [];
@@ -348,11 +381,11 @@
                 div.innerHTML = `
                     <div class="category-header">
                         <h3>${category}</h3>
-                        <button class="delete-category" data-category="${category}">Delete</button>
+                        <button class="delete-category" data-category="${category}">Eliminar</button>
                     </div>
                     <div class="word-input-group">
-                        <input id="wordInput-${category}" placeholder="Add new word">
-                        <button class="small-button add-word-btn" data-category="${category}">Add Word</button>
+                        <input id="wordInput-${category}" placeholder="Añadir palabra">
+                        <button class="small-button add-word-btn" data-category="${category}">Añadir</button>
                     </div>
                     <div class="word-list">
                         ${categories[category].map(word => `
@@ -411,7 +444,7 @@
         }
 
         function deleteCategory(category) {
-            if (confirm(`Delete category "${category}" and all its words?`)) {
+            if (confirm(`¿Eliminar categoría "${category}" y todas sus palabras?`)) {
                 delete categories[category];
                 refreshCategoryManagement();
                 saveCategories();
@@ -434,11 +467,44 @@
         function resetToDefault() {
             localStorage.removeItem('wordGameCategories');
             categories = {
-                'Food': ['Pizza', 'Sushi', 'Burrito', 'Paella', 'Cheesecake', 'Taco', 'Ramen', 'Croissant', 'Dim Sum', 'Falafel'],
-                'Animals': ['Elephant', 'Kangaroo', 'Platypus', 'Chameleon', 'Armadillo', 'Narwhal', 'Mongoose', 'Walrus', 'Lemur', 'Capybara'],
-                'Movies': ['Inception', 'Titanic', 'Jaws', 'Frozen', 'Gladiator', 'Chocolat', 'Saw', 'Twilight', 'Rocky', 'Shrek'],
-                'Countries': ['Canada', 'Brazil', 'Thailand', 'Morocco', 'Norway', 'Vietnam', 'Kenya', 'Argentina', 'Iceland', 'Malaysia'],
-                'Tech': ['Smartphone', 'Blockchain', 'Drone', 'Bitcoin', 'Robot', 'Nanotechnology', 'Metaverse', 'Cryptography', 'Tesla', 'WhatsApp']
+                "Comida": [
+                    "Pizza", "Sushi", "Burrito", "Paella", "Cheesecake", "Taco", "Ramen", 
+                    "Croissant", "Dim Sum", "Falafel", "Empanada", "Churro", "Enchilada", 
+                    "Arepa", "Galleta", "Ceviche", "Tamales", "Pozole", "Tortilla", "Milanesa",
+                    "Hamburguesa", "Hot Dog", "Pollo Frito", "Salchipapa", "Espagueti", 
+                    "Lasagna", "Sopa", "Flan", "Panettone", "Gelatina", "Helado", "Pastel"
+                ],
+                "Animales": [
+                    "Elefante", "Canguro", "Ornitorrinco", "Camaleón", "Armadillo", "Narval", 
+                    "Mangosta", "Morsa", "Lémur", "Capibara", "Perezoso", "Tucán", "Delfín", 
+                    "Ocelote", "Mono", "Jirafa", "Hipopótamo", "Pingüino", "Tiburón", "Zorro",
+                    "León", "Tigre", "Cobra", "Búho", "Cisne", "Pantera", "Rinoceronte", 
+                    "Caballo", "Murciélago", "Caracol", "Erizo", "Mapache", "Coyote"
+                ],
+                "Películas": [
+                    "El Origen", "Titanic", "Tiburón", "Frozen", "Gladiador", "Chocolat", "Saw", 
+                    "Crepúsculo", "Rocky", "Shrek", "Coco", "Avatar", "Toy Story", "Matrix", 
+                    "Harry Potter", "Jurassic Park", "Los Increíbles", "Up", "Ratatouille", 
+                    "Moana", "Star Wars", "El Rey León", "La Bella y la Bestia", "Aladdín", 
+                    "Encanto", "Soul", "Cars", "Avengers", "Spider-Man", "Black Panther", 
+                    "El Señor de los Anillos", "Hércules", "Blanca Nieves"
+                ],
+                "Países": [
+                    "Canadá", "Brasil", "Tailandia", "Marruecos", "Noruega", "Vietnam", "Kenia", 
+                    "Argentina", "Islandia", "Malasia", "España", "Japón", "México", "Perú", 
+                    "Italia", "India", "Sudáfrica", "Francia", "Alemania", "Egipto", "Rusia", 
+                    "China", "Corea del Sur", "Colombia", "Australia", "Grecia", "Chile", 
+                    "Portugal", "Nueva Zelanda", "Indonesia", "Polonia", "Turquía", "Cuba"
+                ],
+                "Tecnología": [
+                    "Smartphone", "Blockchain", "Dron", "Bitcoin", "Robot", "Nanotecnología", 
+                    "Metaverso", "Criptografía", "Tesla", "WhatsApp", "Tablet", "Streaming", 
+                    "Redes Sociales", "Programación", "Ciberseguridad", "Cámara", "Aplicación", 
+                    "Inteligencia Artificial", "5G", "Domótica", "Wifi", "Código QR", 
+                    "Realidad Virtual", "Smartwatch", "Energía Solar", "Impresión 3D", 
+                    "Carga Inalámbrica", "Chatbot", "Machine Learning", "Supercomputadora", 
+                    "Consola", "Teclado Mecánico"
+                ]
             };
             refreshCategoryManagement();
             initializeCategories();
@@ -533,19 +599,19 @@
             document.querySelectorAll('.feedback-icon').forEach(el => el.classList.add('hidden'));
             
             const resultsHTML = `
-                <h1>Game Over!</h1>
-                <p>Final Score: ${score}</p>
+                <h1>¡Juego Terminado!</h1>
+                <p>Puntuación Final: ${score}</p>
                 <div class="results">
                     <div>
-                        <h3>Correct (${correctWords.length}):</h3>
+                        <h3>Correctas (${correctWords.length}):</h3>
                         <div class="word-list">${correctWords.map(word => `<div>✓ ${word}</div>`).join('')}</div>
                     </div>
                     <div>
-                        <h3>Missed (${incorrectWords.length}):</h3>
+                        <h3>Falladas (${incorrectWords.length}):</h3>
                         <div class="word-list">${incorrectWords.map(word => `<div>✗ ${word}</div>`).join('')}</div>
                     </div>
                 </div>
-                <button onclick="resetGame()">Play Again</button>
+                <button onclick="resetGame()">Jugar de Nuevo</button>
             `;
 
             document.getElementById('startScreen').innerHTML = resultsHTML;
@@ -561,7 +627,7 @@
             incorrectWords = [];
             
             document.getElementById('startScreen').innerHTML = `
-                <h1>Forehead Word Game</h1>
+                <h1>Charades & Headbands</h1>
                 <div class="category-buttons" id="categories"></div>
             `;
             
@@ -570,7 +636,7 @@
             updateTimerDisplay();
         }
 
-        // Initialize game
+        // Inicializar juego
         initializeCategories();
 
         // Event listeners
